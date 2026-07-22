@@ -1,0 +1,6 @@
+{
+  "name": "Split Ready AI",
+  "description": "Ferramenta de diagnóstico financeiro e simulação de Split Payment para a Reforma Tributária nas empresas brasileiras.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
