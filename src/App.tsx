@@ -3,6 +3,8 @@ import { CompanyInfo, FinancialInputs, CalculatedMetrics, DiagnosticSession, Use
 import { calculateSplitMetrics } from './lib/calculations';
 import { Header } from './components/Header';
 import { LandingPage } from './components/LandingPage';
+import { ContentHubView } from './components/ContentHubView';
+import { ArticleDetailView } from './components/ArticleDetailView';
 import { CompanyForm } from './components/CompanyForm';
 import { Dashboard } from './components/Dashboard';
 import { AiReportView } from './components/AiReportView';
@@ -23,7 +25,7 @@ import { PreparationChecklist } from './components/PreparationChecklist';
 import { SubscriptionView } from './components/SubscriptionView';
 import { AuthProvider, useAuth } from './modules/users';
 import { AnalyticsService } from './services/analytics.service';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, BookOpen } from 'lucide-react';
 
 const STORAGE_KEY = 'split_ready_ai_sessions';
 
@@ -52,8 +54,55 @@ function AppContent() {
     return null;
   });
 
-  const [activeTab, setActiveTab] = useState<'landing' | 'form' | 'dashboard' | 'report' | 'chat' | 'evolution' | 'checklist' | 'subscription'>('landing');
-  
+  const [activeTab, setActiveTab] = useState<'landing' | 'contents' | 'article' | 'form' | 'dashboard' | 'report' | 'chat' | 'evolution' | 'checklist' | 'subscription'>('landing');
+  const [selectedArticleSlug, setSelectedArticleSlug] = useState<string | null>(null);
+
+  // Synchronize route with URL pathname
+  useEffect(() => {
+    const syncRouteFromPath = () => {
+      const path = window.location.pathname;
+      if (path === '/conteudos' || path === '/conteudos/') {
+        setActiveTab('contents');
+        setSelectedArticleSlug(null);
+      } else if (path.startsWith('/conteudos/')) {
+        const slug = path.replace('/conteudos/', '').split('/')[0];
+        if (slug) {
+          setActiveTab('article');
+          setSelectedArticleSlug(slug);
+        }
+      }
+    };
+
+    syncRouteFromPath();
+    window.addEventListener('popstate', syncRouteFromPath);
+    return () => window.removeEventListener('popstate', syncRouteFromPath);
+  }, []);
+
+  const navigateToHome = () => {
+    setActiveTab('landing');
+    setSelectedArticleSlug(null);
+    if (window.location.pathname !== '/') {
+      window.history.pushState({}, '', '/');
+    }
+  };
+
+  const navigateToContents = () => {
+    setActiveTab('contents');
+    setSelectedArticleSlug(null);
+    if (window.location.pathname !== '/conteudos') {
+      window.history.pushState({}, '', '/conteudos');
+    }
+  };
+
+  const navigateToArticle = (slug: string) => {
+    setActiveTab('article');
+    setSelectedArticleSlug(slug);
+    const targetUrl = `/conteudos/${slug}`;
+    if (window.location.pathname !== targetUrl) {
+      window.history.pushState({}, '', targetUrl);
+    }
+  };
+
   // Modals visibility
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isEduOpen, setIsEduOpen] = useState(false);
@@ -77,6 +126,24 @@ function AppContent() {
       }
     }
   }, [isAuthenticated, user]);
+
+  // Indexation security: Apply noindex on private views and dashboards
+  useEffect(() => {
+    let metaRobots = document.querySelector('meta[name="robots"]');
+    if (!metaRobots) {
+      metaRobots = document.createElement('meta');
+      metaRobots.setAttribute('name', 'robots');
+      document.head.appendChild(metaRobots);
+    }
+
+    const isPublicView = activeTab === 'landing' || activeTab === 'contents' || activeTab === 'article';
+    const isPrivate = !isPublicView || isAdminOpen || isPortfolioOpen || isReportCenterOpen || isProfileSettingsOpen;
+    if (isPrivate) {
+      metaRobots.setAttribute('content', 'noindex, nofollow');
+    } else {
+      metaRobots.setAttribute('content', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    }
+  }, [activeTab, isAdminOpen, isPortfolioOpen, isReportCenterOpen, isProfileSettingsOpen]);
 
   const handleStartDiagnosisFromOnboarding = (company: CompanyInfo, partialInputs?: Partial<FinancialInputs>) => {
     const fullInputs: FinancialInputs = {
@@ -240,12 +307,32 @@ function AppContent() {
 
         {/* Main Content Area */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-          {activeTab === 'landing' && !currentSession && (
+          {activeTab === 'landing' && (
             <LandingPage
               onStartDiagnosis={() => setActiveTab('form')}
               onOpenAuth={() => setIsAuthOpen(true)}
               onOpenExpressDiagnosis={() => setIsExpressOpen(true)}
               onLoadDemoCompany={handleLoadDemoCompany}
+              onNavigateContents={navigateToContents}
+              onSelectArticle={navigateToArticle}
+            />
+          )}
+
+          {activeTab === 'contents' && (
+            <ContentHubView
+              onSelectArticle={navigateToArticle}
+              onNavigateHome={navigateToHome}
+              onOpenExpressDiagnosis={() => setIsExpressOpen(true)}
+            />
+          )}
+
+          {activeTab === 'article' && selectedArticleSlug && (
+            <ArticleDetailView
+              slug={selectedArticleSlug}
+              onNavigateHome={navigateToHome}
+              onNavigateContents={navigateToContents}
+              onSelectArticle={navigateToArticle}
+              onOpenExpressDiagnosis={() => setIsExpressOpen(true)}
             />
           )}
 
@@ -257,13 +344,13 @@ function AppContent() {
             <SubscriptionView onBackToDashboard={() => setActiveTab('dashboard')} />
           )}
 
-          {(activeTab === 'form' || (!currentSession && activeTab !== 'landing' && activeTab !== 'checklist' && activeTab !== 'subscription')) && (
+          {activeTab === 'form' && (
             <CompanyForm
               onSubmit={handleCreateOrUpdateDiagnosis}
             />
           )}
 
-          {currentSession && activeTab !== 'form' && activeTab !== 'landing' && activeTab !== 'checklist' && activeTab !== 'subscription' && (
+          {currentSession && activeTab !== 'form' && activeTab !== 'landing' && activeTab !== 'contents' && activeTab !== 'article' && activeTab !== 'checklist' && activeTab !== 'subscription' && (
             <>
               {activeTab === 'dashboard' && (
                 <Dashboard
@@ -384,17 +471,68 @@ function AppContent() {
         onClose={() => setIsAdminOpen(false)}
       />
 
-      {/* Footer */}
-      <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 py-8 px-4 text-xs mt-16 print:hidden">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            <span className="font-bold text-slate-200">Split Ready AI</span>
-            <span>— Plataforma SaaS de Diagnóstico Financeiro & Split Payment</span>
+      {/* Footer com Links SEO de navegação */}
+      <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 py-10 px-4 text-xs mt-16 print:hidden">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+              <span className="font-bold text-slate-200">Split Ready AI</span>
+              <span>— Plataforma SaaS de Diagnóstico Financeiro & Split Payment</span>
+            </div>
+            <p className="text-slate-500">
+              Baseado nas diretrizes da Emenda Constitucional 132/2023 (Reforma Tributária IBS + CBS).
+            </p>
           </div>
-          <p className="text-slate-500">
-            Baseado nas diretrizes da Emenda Constitucional 132/2023 (Reforma Tributária IBS + CBS).
-          </p>
+
+          <div className="pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-400">
+            <div className="flex flex-wrap items-center gap-4">
+              <button
+                onClick={navigateToHome}
+                className="hover:text-emerald-400 transition-colors cursor-pointer"
+              >
+                Início
+              </button>
+              <button
+                onClick={navigateToContents}
+                className="hover:text-cyan-400 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <BookOpen className="w-3 h-3 text-cyan-400" />
+                Central de Conteúdos
+              </button>
+              <button
+                onClick={() => {
+                  navigateToHome();
+                  setTimeout(() => {
+                    document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className="hover:text-blue-400 transition-colors cursor-pointer"
+              >
+                Perguntas Frequentes (FAQ)
+              </button>
+              <a
+                href="/sitemap.xml"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-amber-400 transition-colors"
+              >
+                Sitemap.xml
+              </a>
+              <a
+                href="/robots.txt"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-slate-300 transition-colors"
+              >
+                Robots.txt
+              </a>
+            </div>
+
+            <p className="text-slate-500">
+              © {new Date().getFullYear()} Split Ready AI — Todos os direitos reservados.
+            </p>
+          </div>
         </div>
       </footer>
 

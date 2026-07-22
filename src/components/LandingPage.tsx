@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Sparkles, ArrowRight, Zap, TrendingUp, Calculator, Building2, Landmark, Clock, Award, FileText, CheckCircle2, Play, Users, HelpCircle, ChevronDown, ChevronUp, BookOpen, AlertCircle, ArrowDownCircle, ShieldAlert } from 'lucide-react';
+import { ShieldCheck, Sparkles, ArrowRight, Zap, TrendingUp, Calculator, Building2, Landmark, Clock, Award, FileText, CheckCircle2, Play, Users, HelpCircle, ChevronDown, ChevronUp, BookOpen, AlertCircle, ArrowDownCircle, ShieldAlert, Calendar } from 'lucide-react';
+import { ARTICLES } from '../data/articles';
 
 interface LandingPageProps {
   onStartDiagnosis: () => void;
   onOpenAuth: () => void;
   onOpenExpressDiagnosis: () => void;
   onLoadDemoCompany: () => void;
+  onNavigateContents?: () => void;
+  onSelectArticle?: (slug: string) => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
@@ -13,25 +16,55 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onOpenAuth,
   onOpenExpressDiagnosis,
   onLoadDemoCompany,
+  onNavigateContents,
+  onSelectArticle,
 }) => {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const faqs = [
     {
+      q: 'O que é Split Payment?',
+      a: 'O Split Payment é o mecanismo de retenção e recolhimento automático de impostos introduzido pela Reforma Tributária (EC 132/2023). Quando uma venda é liquidada (via cartão, Pix ou boleto), a fatia referente aos impostos (IBS e CBS) é separada na fonte e enviada diretamente para o Fisco, repassando à empresa vendedora apenas o valor líquido.',
+    },
+    {
+      q: 'Quando o Split Payment começa no Brasil?',
+      a: 'A implementação prevista na Emenda Constitucional nº 132/2023 terá uma fase gradual de transição e testes operacionais a partir de 2026/2027. O cronograma definitivo das alíquotas e regras operacionais dependerá da regulamentação em Lei Complementar.',
+    },
+    {
+      q: 'Como o Split Payment pode afetar o caixa das empresas?',
+      a: 'Com a retenção imediata no momento da transação, a empresa deixa de contar com o valor bruto da venda no seu caixa até a data de vencimento da guia tributária tradicional. Isso pode criar um déficit imediato no capital de giro, especialmente em vendas a prazo.',
+    },
+    {
+      q: 'O que são IBS e CBS?',
+      a: 'O IBS (Imposto sobre Bens e Serviços) substituirá o ICMS e o ISS, com gestão compartilhada entre Estados e Municípios. A CBS (Contribuição sobre Bens e Serviços) substituirá PIS, Cofins e IPI, sob gestão da Receita Federal. Juntos, formam o IVA Dual brasileiro.',
+    },
+    {
+      q: 'Empresas do Simples Nacional serão afetadas?',
+      a: 'Sim. Embora o Simples Nacional mantenha seu regime unificado de apuração, a EC 132/2023 prevê regras específicas para o aproveitamento de créditos e opção pela tributação do IBS/CBS no modelo regular, impactando a competitividade B2B e o fluxo de caixa.',
+    },
+    {
+      q: 'Como uma empresa pode se preparar para o Split Payment?',
+      a: 'Mapeando seus meios de pagamento, calculando o Prazo Médio de Recebimento (PMR) versus Prazo Médio de Pagamento (PMP), simulando o impacto na margem líquida com ferramentas como o Split Ready AI e revisando contratos com fornecedores.',
+    },
+    {
+      q: 'O Split Payment significa aumento de imposto?',
+      a: 'O Split Payment em si é um método de arrecadação e cobrança, não um aumento formal de alíquota. Porém, por eliminar a folga de caixa do imposto acumulado, ele gera o mesmo efeito prático de uma redução súbita na liquidez para quem dependia desse fôlego.',
+    },
+    {
+      q: 'O que muda no recebimento via Pix e cartão?',
+      a: 'As credenciadoras de cartão, adquirentes e instituições bancárias atuarão como agentes de retenção, descontando a parcela do IBS e da CBS na liquidação da conta e repassando apenas o saldo líquido para o comerciante.',
+    },
+    {
+      q: 'Como calcular o impacto do prazo de recebimento?',
+      a: 'Utilizando simuladores de liquidez como o Split Ready AI, que cruzam faturamento, prazos médios de recebimento (30/60/90 dias), custos com antecipação e a taxa de retenção automática estimada de IBS/CBS.',
+    },
+    {
       q: 'O Split Ready AI calcula meus impostos?',
-      a: 'Não. O Split Ready AI é uma plataforma SaaS de simulação de liquidez e impacto no fluxo de caixa decorrente do Split Payment (EC 132/2023), não um software de apuração fiscal.',
+      a: 'Não. O Split Ready AI é uma plataforma SaaS de inteligência e diagnóstico financeiro de liquidez, desenvolvida para simular o impacto do Split Payment e calcular o Split Ready Score™, não um software de apuração fiscal.',
     },
     {
-      q: 'Preciso trocar meu contador?',
-      a: 'De forma alguma! Nossa ferramenta foi desenvolvida para você utilizar em conjunto com seu escritório contábil ou consultor financeiro, ajudando a tomar decisões preventivas sobre capital de giro e precificação.',
-    },
-    {
-      q: 'O resultado é uma previsão oficial?',
-      a: 'Trata-se de um modelo de simulação financeira e educacional baseado nas diretrizes de retenção na fonte da Reforma Tributária (alíquota padrão de referência de 28% IBS/CBS). Serve para diagnóstico preventivo.',
-    },
-    {
-      q: 'Para quais empresas serve?',
-      a: 'Para todas as empresas brasileiras do Simples Nacional, Lucro Presumido e Lucro Real que vendem a prazo (cartão de crédito, boleto, faturamento) e precisarão se adequar à retenção automática de tributos.',
+      q: 'O diagnóstico substitui um contador?',
+      a: 'De forma alguma. O diagnóstico do Split Ready AI serve como ferramenta estratégica preventiva de apoio ao empresário, seu gestor financeiro e sua assessoria contábil para a tomada de decisões de capital de giro.',
     },
   ];
 
@@ -338,45 +371,120 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* FAQ Section */}
-      <section className="bg-slate-50 border border-slate-200 rounded-3xl p-8 sm:p-12 space-y-8">
-        <div className="space-y-2 text-center max-w-xl mx-auto">
-          <span className="bg-slate-200 text-slate-800 text-xs font-extrabold px-3 py-1 rounded-full">
-            Dúvidas Frequentes
+      <section id="faq" className="bg-slate-50 border border-slate-200 rounded-3xl p-8 sm:p-12 space-y-8">
+        <div className="space-y-2 text-center max-w-3xl mx-auto">
+          <span className="bg-blue-100 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full border border-blue-200">
+            Dúvidas Frequentes & Respostas Educativas
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-            Perguntas Frequentes
+            Perguntas frequentes sobre Split Payment e Reforma Tributária
           </h2>
+          <p className="text-xs text-slate-500">
+            Esclareça como o recolhimento automático na fonte impactará a gestão financeira da sua empresa.
+          </p>
         </div>
 
-        <div className="max-w-3xl mx-auto space-y-3">
+        <div className="max-w-4xl mx-auto space-y-4">
           {faqs.map((faq, idx) => {
             const isOpen = openFaqIndex === idx;
             return (
               <div
                 key={idx}
-                className="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all"
+                className="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all shadow-xs"
               >
                 <button
                   onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                  className="w-full p-5 text-left font-extrabold text-sm text-slate-900 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50"
+                  className="w-full p-5 text-left font-extrabold text-sm sm:text-base text-slate-900 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50"
+                  aria-expanded={isOpen}
                 >
-                  <span>{faq.q}</span>
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 m-0">
+                    {faq.q}
+                  </h3>
                   {isOpen ? (
-                    <ChevronUp className="w-4 h-4 text-blue-600 shrink-0" />
+                    <ChevronUp className="w-5 h-5 text-blue-600 shrink-0" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                    <ChevronDown className="w-5 h-5 text-slate-400 shrink-0" />
                   )}
                 </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-100">
-                    {faq.a}
-                  </div>
-                )}
+                <div
+                  className={`px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 ${
+                    isOpen ? 'block' : 'hidden md:block md:opacity-75'
+                  }`}
+                >
+                  <p className="m-0 text-slate-600 leading-relaxed">{faq.a}</p>
+                </div>
               </div>
             );
           })}
         </div>
       </section>
+
+      {/* Seção de Conteúdos da Reforma Tributária */}
+      <section id="conteudos-recentes" className="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 space-y-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100 pb-6">
+          <div>
+            <span className="bg-cyan-50 text-cyan-800 text-xs font-extrabold px-3 py-1 rounded-full border border-cyan-200">
+              Guia & Educação Fiscal
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
+              Conteúdos sobre Split Payment e Reforma Tributária
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Artigos educativos para orientar decisões de fluxo de caixa e capital de giro.
+            </p>
+          </div>
+          {onNavigateContents && (
+            <button
+              onClick={onNavigateContents}
+              className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0"
+            >
+              <BookOpen className="w-4 h-4 text-cyan-400" />
+              Ver Todos os Conteúdos
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {ARTICLES.slice(0, 3).map((art) => (
+            <article
+              key={art.slug}
+              className="p-6 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col justify-between hover:border-cyan-500 transition-all group cursor-pointer"
+              onClick={() => onSelectArticle && onSelectArticle(art.slug)}
+            >
+              <div>
+                <div className="flex items-center justify-between text-[11px] text-slate-500 mb-3">
+                  <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold">
+                    {art.category}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-slate-400" />
+                    {art.readTime}
+                  </span>
+                </div>
+                <h3 className="text-base font-extrabold text-slate-900 group-hover:text-cyan-700 transition-colors line-clamp-2 mb-2">
+                  {art.title}
+                </h3>
+                <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                  {art.description}
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  {new Date(art.publishedAt).toLocaleDateString('pt-BR')}
+                </span>
+                <span className="text-cyan-700 font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  Ler artigo
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Final */}
 
       {/* CTA Final */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-3xl p-8 sm:p-12 text-center space-y-4 shadow-xl">

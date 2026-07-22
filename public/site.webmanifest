@@ -1,0 +1,10 @@
+{
+  "name": "Split Ready AI",
+  "short_name": "Split Ready",
+  "description": "Diagnóstico de Liquidez e Preparação para o Split Payment e Reforma Tributária EC 132/2023",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": []
+}

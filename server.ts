@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
@@ -10,6 +11,50 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+
+// Serve SEO static files with explicit content types before SPA routing
+app.get("/robots.txt", (_req, res) => {
+  res.type("text/plain");
+  const distFile = path.join(process.cwd(), "dist", "robots.txt");
+  const publicFile = path.join(process.cwd(), "public", "robots.txt");
+  const targetPath = fs.existsSync(distFile) ? distFile : publicFile;
+  if (fs.existsSync(targetPath)) {
+    return res.sendFile(targetPath);
+  }
+  return res.status(404).send("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /dashboard\nSitemap: https://contabil.ntaplicacoes.com.br/sitemap.xml");
+});
+
+app.get("/sitemap.xml", (_req, res) => {
+  res.type("application/xml");
+  const distFile = path.join(process.cwd(), "dist", "sitemap.xml");
+  const publicFile = path.join(process.cwd(), "public", "sitemap.xml");
+  const targetPath = fs.existsSync(distFile) ? distFile : publicFile;
+  if (fs.existsSync(targetPath)) {
+    return res.sendFile(targetPath);
+  }
+  const fullXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://contabil.ntaplicacoes.com.br/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://contabil.ntaplicacoes.com.br/conteudos</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://contabil.ntaplicacoes.com.br/conteudos/o-que-e-split-payment</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://contabil.ntaplicacoes.com.br/conteudos/como-split-payment-afeta-fluxo-de-caixa</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://contabil.ntaplicacoes.com.br/conteudos/ibs-e-cbs-o-que-muda-para-empresas</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://contabil.ntaplicacoes.com.br/conteudos/como-preparar-empresa-para-reforma-tributaria</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://contabil.ntaplicacoes.com.br/conteudos/capital-de-giro-e-split-payment</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+</urlset>`;
+  return res.send(fullXml);
+});
+
+app.get("/site.webmanifest", (_req, res) => {
+  res.type("application/manifest+json");
+  const distFile = path.join(process.cwd(), "dist", "site.webmanifest");
+  const publicFile = path.join(process.cwd(), "public", "site.webmanifest");
+  const targetPath = fs.existsSync(distFile) ? distFile : publicFile;
+  if (fs.existsSync(targetPath)) {
+    return res.sendFile(targetPath);
+  }
+  return res.status(404).json({ name: "Split Ready AI", short_name: "Split Ready", start_url: "/", display: "standalone" });
+});
 
 // Initialize Gemini Client server-side
 const ai = new GoogleGenAI({
