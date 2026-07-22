@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { CompanyInfo, FinancialInputs, TaxRegime, SectorType } from '../types';
-import { Building2, Calculator, Info, Sparkles, ChevronRight, Zap } from 'lucide-react';
+import { Building2, Calculator, Info, Sparkles, ChevronRight, Zap, Lock } from 'lucide-react';
 import { calculateSplitMetrics, formatCurrency, formatPercent } from '../lib/calculations';
+import { LeadService } from '../services/lead.service';
+import { AnalyticsService } from '../services/analytics.service';
 
 interface CompanyFormProps {
   onSubmit: (company: CompanyInfo, inputs: FinancialInputs) => void;
@@ -132,6 +134,22 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
       aliquotaSplit: numAliquotaSplit,
       margemLiquida: numMargemLiquida,
     };
+
+    // Save/update lead info
+    LeadService.saveLead({
+      nome: company.responsavel || company.nomeEmpresa,
+      empresa: company.nomeEmpresa,
+      email: '',
+      telefone: '',
+      origem: 'full_diagnosis',
+      diagnostico_score: previewMetrics.splitReadyScore,
+    });
+
+    AnalyticsService.track('diagnosis_started', {
+      companyName: company.nomeEmpresa,
+      faturamento: inputs.faturamento,
+      score: previewMetrics.splitReadyScore,
+    });
 
     onSubmit(company, inputs);
   };

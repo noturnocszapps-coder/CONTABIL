@@ -23,6 +23,7 @@ import {
   Clock,
   HelpCircle,
   FileCheck2,
+  ChevronDown,
   DollarSign,
   AlertTriangle,
   Calendar,
@@ -60,6 +61,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onOpenChat,
 }) => {
   const [subTab, setSubTab] = useState<'overview' | 'impact2027' | 'simulator'>('overview');
+  const [showFullMobileDiagnostic, setShowFullMobileDiagnostic] = useState(false);
 
   // Simulator State
   const [simPrazo, setSimPrazo] = useState(inputs.prazoMedio);
@@ -331,18 +333,41 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
           </div>
 
-          {/* Mapa de Vulnerabilidade Financeira */}
-          <VulnerabilityMap
-            inputs={activeInputs}
-            metrics={activeMetrics}
-          />
+          {/* Mobile Toggle Button for Advanced Diagnostic */}
+          <div className="md:hidden pt-2">
+            <button
+              onClick={() => setShowFullMobileDiagnostic((prev) => !prev)}
+              className="w-full py-3.5 px-5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-2xl shadow-md border border-slate-700 flex items-center justify-center gap-2.5 transition-all cursor-pointer min-h-[44px]"
+            >
+              <Sliders className="w-4 h-4 text-emerald-400" />
+              <span>
+                {showFullMobileDiagnostic
+                  ? 'Recolher Análises Avançadas'
+                  : 'Ver Diagnóstico Completo & Análises Avançadas'}
+              </span>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                  showFullMobileDiagnostic ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+          </div>
 
-          {/* Benchmark por Segmento */}
-          <SectorBenchmarkCard
-            setor={company.setor}
-            inputs={activeInputs}
-            metrics={activeMetrics}
-          />
+          {/* Advanced Diagnostic Sections (Always open on Desktop, Collapsible on Mobile) */}
+          <div className={showFullMobileDiagnostic ? 'space-y-8 animate-in fade-in duration-200' : 'hidden md:block md:space-y-8'}>
+            
+            {/* Mapa de Vulnerabilidade Financeira */}
+            <VulnerabilityMap
+              inputs={activeInputs}
+              metrics={activeMetrics}
+            />
+
+            {/* Benchmark por Segmento */}
+            <SectorBenchmarkCard
+              setor={company.setor}
+              inputs={activeInputs}
+              metrics={activeMetrics}
+            />
 
           {/* Quick Simulator Bar */}
           <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-6 shadow-md">
@@ -483,7 +508,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
               </div>
 
-              <div className="h-72 w-full">
+              <div className="h-56 sm:h-72 w-full overflow-x-auto">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={projectionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} />
@@ -561,6 +586,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             </div>
 
+          </div>
           </div>
 
           {/* Action Banner for Gemini Report */}

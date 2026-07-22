@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Sparkles, ArrowRight, Zap, TrendingUp, Calculator, Building2, Landmark, Clock, Award, FileText, CheckCircle2, Play, Users, HelpCircle, ChevronDown, ChevronUp, BookOpen, AlertCircle, ArrowDownCircle, ShieldAlert, Calendar } from 'lucide-react';
 import { ARTICLES } from '../data/articles';
+import { SplitPaymentExplanationSection } from './SplitPaymentExplanationSection';
 
 interface LandingPageProps {
   onStartDiagnosis: () => void;
@@ -72,27 +73,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     <div className="space-y-16 pb-12 animate-in fade-in duration-300">
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-8 sm:p-14 border border-slate-800 shadow-2xl relative overflow-hidden text-center sm:text-left">
+      <section className="bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-14 border border-slate-800 shadow-2xl relative overflow-hidden text-center sm:text-left">
         <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500/20 via-indigo-500/10 to-transparent pointer-events-none" />
 
-        <div className="max-w-3xl space-y-6 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-extrabold tracking-wide">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+        <div className="max-w-3xl space-y-4 sm:space-y-6 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-[11px] sm:text-xs font-extrabold tracking-wide">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <span>PLATAFORMA SAAS • REFORMA TRIBUTÁRIA EC 132/2023</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-5xl font-black text-white tracking-tight leading-tight">
             Descubra se sua empresa está preparada para o <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-teal-300 to-emerald-400">Split Payment</span>.
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal max-w-2xl">
+          <p className="hidden md:block text-base sm:text-lg text-slate-300 leading-relaxed font-normal max-w-2xl">
             Simule o impacto da retenção instantânea de impostos na fonte e descubra quais ajustes de prazo e margem protegerão seu caixa antes do início da transição.
           </p>
+          <p className="md:hidden text-xs sm:text-sm text-slate-300 leading-relaxed font-normal max-w-2xl">
+            Descubra como o Split Payment pode impactar seu caixa e quais ajustes podem ajudar sua empresa.
+          </p>
 
-          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <button
               onClick={onOpenExpressDiagnosis}
-              className="px-6 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-2xl transition-all shadow-xl hover:shadow-emerald-500/20 flex items-center justify-center gap-2.5 cursor-pointer group"
+              className="px-6 py-3.5 sm:py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-2xl transition-all shadow-xl hover:shadow-emerald-500/20 flex items-center justify-center gap-2.5 cursor-pointer group min-h-[44px]"
             >
               <Zap className="w-5 h-5 fill-slate-950" />
               <span>Fazer Diagnóstico Gratuito</span>
@@ -100,7 +104,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
             <button
               onClick={onLoadDemoCompany}
-              className="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 font-extrabold text-sm rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="px-6 py-3.5 sm:py-4 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 font-extrabold text-sm rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
             >
               <Play className="w-4 h-4 fill-emerald-400" />
               <span>Testar Demonstração</span>
@@ -108,28 +112,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
             <button
               onClick={onStartDiagnosis}
-              className="px-5 py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-2xl transition-all border border-slate-700 flex items-center justify-center gap-1.5 cursor-pointer"
+              className="hidden sm:flex px-5 py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-2xl transition-all border border-slate-700 items-center justify-center gap-1.5 cursor-pointer min-h-[44px]"
             >
               <span>Cadastro Completo</span>
             </button>
           </div>
 
-          <div className="pt-4 flex flex-wrap items-center gap-6 text-xs text-slate-400">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <div className="pt-2 sm:pt-4 flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6 text-xs text-slate-400">
+            <span className="flex items-center gap-1.5 text-[11px] sm:text-xs">
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
               Calculadora IPS, CFP e RM
             </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span className="flex items-center gap-1.5 text-[11px] sm:text-xs">
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
               Split Ready Score™ (0-100)
             </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span className="flex items-center gap-1.5 text-[11px] sm:text-xs">
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
               Plano de Ação com IA Gemini
             </span>
           </div>
         </div>
       </section>
+
+      {/* Seção Educativa: Entenda o Split Payment em 30 segundos */}
+      <SplitPaymentExplanationSection onOpenExpressDiagnosis={onOpenExpressDiagnosis} />
 
       {/* Como Funciona em 3 Passos */}
       <section className="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 space-y-8 shadow-xs">
@@ -162,7 +169,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
             <h3 className="text-base font-black text-slate-900">Receba seu Score.</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              O algoritmo calcula seu Split Ready Score™ (0-100) e projeta o déficit imediato no caixa pós-retenção de 28%.
+              O algoritmo calcula seu Split Ready Score™ (0-100) e projeta o déficit no caixa considerando a alíquota de referência da simulação (ex: 28%).
             </p>
           </div>
 
@@ -278,7 +285,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             Meu Impacto em 2027
           </h3>
           <p className="text-xs text-slate-600 leading-relaxed">
-            Compare lado a lado o caixa atual e a retenção automática de 28% na fonte, analisando o déficit de capital de giro em tempo real.
+            Compare lado a lado o caixa atual e a retenção automática estimada na fonte (alíquota de referência de 28%), analisando o déficit de capital de giro em tempo real.
           </p>
         </div>
 

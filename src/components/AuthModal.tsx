@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { UserRole, UserProfile } from '../types';
 import { useAuth } from '../modules/users';
 import { supabase, isSupabaseConfigured, SUPABASE_SCHEMA_SQL } from '../lib/supabase';
+import { LeadService } from '../services/lead.service';
+import { AnalyticsService } from '../services/analytics.service';
 import { Building2, Calculator, Mail, Lock, User, Check, X, Shield, Sparkles, Database, Copy, CheckCircle2, KeyRound, ArrowLeft } from 'lucide-react';
 
 interface AuthModalProps {
@@ -88,6 +90,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           companyName,
           plan: 'FREE',
         });
+
+        // Save account registration lead
+        await LeadService.saveLead({
+          user_id: userProfile.id,
+          nome: name || email.split('@')[0],
+          empresa: companyName || (role === 'CONTADOR' ? 'Escritório Contábil' : 'Empresa'),
+          email,
+          telefone: '',
+          origem: 'account_registration',
+          status: 'new',
+        });
+
+        AnalyticsService.track('account_created', { email, role, companyName }, userProfile.id);
+        AnalyticsService.track('lead_created', { email, source: 'account_registration' }, userProfile.id);
+
         if (onLoginSuccess) onLoginSuccess(userProfile);
         onClose();
       } else {
@@ -339,6 +356,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   />
                 </div>
               </div>
+
+              {isSignUp && (
+                <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-500 leading-tight">
+                  Ao continuar, você concorda com o uso dos dados informados para gerar seu diagnóstico, salvar seu histórico e permitir contato relacionado à plataforma.
+                </div>
+              )}
 
               <button
                 type="submit"

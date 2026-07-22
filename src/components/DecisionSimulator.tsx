@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FinancialInputs, CalculatedMetrics, CompanyInfo } from '../types';
 import { calculateSplitMetrics, formatCurrency, formatPercent } from '../lib/calculations';
-import { Sliders, Sparkles, ArrowRight, RefreshCw, CheckCircle, TrendingUp, ShieldCheck, Zap, DollarSign } from 'lucide-react';
+import { Sliders, Sparkles, ArrowRight, RefreshCw, CheckCircle, TrendingUp, ShieldCheck, Zap, DollarSign, ChevronDown } from 'lucide-react';
 
 interface DecisionSimulatorProps {
   company: CompanyInfo;
@@ -17,6 +17,7 @@ export const DecisionSimulator: React.FC<DecisionSimulatorProps> = ({
   onApplySimulationToInputs,
 }) => {
   // Decision variables
+  const [showAdvancedAnalysis, setShowAdvancedAnalysis] = useState(false);
   const [aumentoPrecoPct, setAumentoPrecoPct] = useState<number>(0);
   const [reducaoPrazoDias, setReducaoPrazoDias] = useState<number>(0);
   const [reducaoCustosPct, setReducaoCustosPct] = useState<number>(0);
@@ -263,8 +264,30 @@ export const DecisionSimulator: React.FC<DecisionSimulatorProps> = ({
 
       </div>
 
-      {/* Detailed Impact Breakdown */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4 text-xs">
+      {/* Mobile Toggle Button for Advanced Simulation Analysis */}
+      <div className="md:hidden pt-1">
+        <button
+          onClick={() => setShowAdvancedAnalysis((prev) => !prev)}
+          className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs rounded-xl border border-slate-200 flex items-center justify-center gap-2 transition-all cursor-pointer min-h-[44px]"
+        >
+          <Sliders className="w-4 h-4 text-blue-600" />
+          <span>{showAdvancedAnalysis ? 'Recolher Análise Avançada' : 'Ver Análise Avançada & Comparativo'}</span>
+          <ChevronDown
+            className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+              showAdvancedAnalysis ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+      </div>
+
+      {/* Detailed Impact Breakdown (Always open on Desktop, Collapsible on Mobile) */}
+      <div
+        className={
+          showAdvancedAnalysis
+            ? 'bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 text-xs animate-in fade-in duration-200'
+            : 'hidden md:block bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 text-xs'
+        }
+      >
         <h4 className="font-extrabold text-slate-900 text-sm">
           Comparativo de Indicadores Financeiros
         </h4>

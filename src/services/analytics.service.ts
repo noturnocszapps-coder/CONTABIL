@@ -2,9 +2,12 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export type AnalyticsEventType =
   | 'user_registered'
+  | 'account_created'
+  | 'lead_created'
   | 'diagnosis_started'
   | 'diagnosis_completed'
   | 'report_generated'
+  | 'report_unlocked'
   | 'upgrade_clicked'
   | 'plan_changed'
   | 'onboarding_completed';
@@ -87,10 +90,13 @@ export class AnalyticsService {
 
     return {
       totalEvents: events.length,
-      usersRegistered: countByEvent('user_registered'),
+      usersRegistered: countByEvent('user_registered') + countByEvent('account_created'),
+      leadsCreated: countByEvent('lead_created'),
+      accountsCreated: countByEvent('account_created'),
       diagnosesStarted: countByEvent('diagnosis_started'),
       diagnosesCompleted: countByEvent('diagnosis_completed'),
       reportsGenerated: countByEvent('report_generated'),
+      reportsUnlocked: countByEvent('report_unlocked'),
       upgradeClicks: countByEvent('upgrade_clicked'),
       plansChanged: countByEvent('plan_changed'),
       onboardingsCompleted: countByEvent('onboarding_completed'),

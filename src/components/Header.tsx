@@ -17,6 +17,7 @@ import {
   LogOut,
   Settings,
   ChevronRight,
+  ChevronDown,
   Shield,
   Building2,
   Calculator,
@@ -63,6 +64,17 @@ export const Header: React.FC<HeaderProps> = ({
   const { user, signOut, permissions } = useAuth();
   const activeUser = user || currentUser;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    diagnostico: true,
+    inteligencia: true,
+    conta: true,
+    contador: true,
+    admin: true,
+  });
+
+  const toggleGroup = (groupKey: string) => {
+    setOpenGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }));
+  };
 
   const handleNavClick = (
     tab: 'landing' | 'dashboard' | 'report' | 'chat' | 'evolution' | 'checklist' | 'subscription'
@@ -390,171 +402,250 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-            {/* Active Company Diagnostic Navigation Tabs (Mobile) */}
+            {/* Group 1: DIAGNÓSTICO */}
             {currentCompany && (
-              <div className="pt-4 space-y-2">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block px-1">
-                  Navegação do Diagnóstico ({currentCompany.nomeEmpresa})
-                </span>
+              <div className="pt-3 space-y-2">
+                <button
+                  onClick={() => toggleGroup('diagnostico')}
+                  className="w-full flex items-center justify-between text-[11px] font-black uppercase text-slate-400 tracking-wider px-1 py-1 cursor-pointer"
+                >
+                  <span>DIAGNÓSTICO ({currentCompany.nomeEmpresa})</span>
+                  {openGroups.diagnostico ? (
+                    <ChevronDown className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-slate-500" />
+                  )}
+                </button>
 
-                <div className="space-y-1">
+                {openGroups.diagnostico && (
+                  <div className="space-y-1.5 pl-1">
+                    <button
+                      onClick={() => handleNavClick('dashboard')}
+                      className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
+                        activeTab === 'dashboard'
+                          ? 'bg-blue-600 text-white font-black'
+                          : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <FileText className="w-4 h-4 text-blue-400" />
+                        <span>Dashboard de Liquidez</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-500" />
+                    </button>
+
+                    <button
+                      onClick={() => handleNavClick('checklist')}
+                      className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
+                        activeTab === 'checklist'
+                          ? 'bg-blue-600 text-white font-black'
+                          : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <CheckSquare className="w-4 h-4 text-emerald-400" />
+                        <span>Plano de Preparação</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-500" />
+                    </button>
+
+                    <button
+                      onClick={() => handleNavClick('evolution')}
+                      className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
+                        activeTab === 'evolution'
+                          ? 'bg-blue-600 text-white font-black'
+                          : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <TrendingUp className="w-4 h-4 text-emerald-400" />
+                        <span>Evolução do Score</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-500" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Group 2: INTELIGÊNCIA */}
+            {currentCompany && (
+              <div className="pt-3 space-y-2">
+                <button
+                  onClick={() => toggleGroup('inteligencia')}
+                  className="w-full flex items-center justify-between text-[11px] font-black uppercase text-slate-400 tracking-wider px-1 py-1 cursor-pointer"
+                >
+                  <span>INTELIGÊNCIA</span>
+                  {openGroups.inteligencia ? (
+                    <ChevronDown className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-slate-500" />
+                  )}
+                </button>
+
+                {openGroups.inteligencia && (
+                  <div className="space-y-1.5 pl-1">
+                    <button
+                      onClick={() => handleNavClick('report')}
+                      className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
+                        activeTab === 'report'
+                          ? 'bg-blue-600 text-white font-black'
+                          : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Sparkles className="w-4 h-4 text-amber-300" />
+                        <span>Relatório Executivo IA</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-500" />
+                    </button>
+
+                    <button
+                      onClick={() => handleNavClick('chat')}
+                      className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
+                        activeTab === 'chat'
+                          ? 'bg-blue-600 text-white font-black'
+                          : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <HelpCircle className="w-4 h-4 text-indigo-300" />
+                        <span>Consultor IA</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-500" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Group 3: CONTA E FERRAMENTAS */}
+            <div className="pt-3 space-y-2">
+              <button
+                onClick={() => toggleGroup('conta')}
+                className="w-full flex items-center justify-between text-[11px] font-black uppercase text-slate-400 tracking-wider px-1 py-1 cursor-pointer"
+              >
+                <span>CONTA E FERRAMENTAS</span>
+                {openGroups.conta ? (
+                  <ChevronDown className="w-4 h-4 text-emerald-400" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-slate-500" />
+                )}
+              </button>
+
+              {openGroups.conta && (
+                <div className="space-y-1.5 pl-1">
                   <button
-                    onClick={() => handleNavClick('dashboard')}
-                    className={`w-full px-3.5 py-3 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
-                      activeTab === 'dashboard'
-                        ? 'bg-blue-600 text-white font-black'
-                        : 'bg-slate-800/50 text-slate-300 hover:bg-slate-800'
-                    }`}
+                    onClick={() => handleNavClick('subscription')}
+                    className="w-full px-3.5 py-2.5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 text-amber-300 hover:bg-amber-500/20 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <CreditCard className="w-4 h-4 text-amber-400" />
+                      <span>Minha Assinatura</span>
+                    </div>
+                    <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full font-black">
+                      {activeUser?.plan || 'FREE'}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onOpenReportCenterModal();
+                    }}
+                    className="w-full px-3.5 py-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-xl text-xs font-bold text-left text-slate-300 flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
                       <FileText className="w-4 h-4 text-blue-400" />
-                      <span>Dashboard de Liquidez</span>
+                      <span>Relatórios PDF</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-500" />
                   </button>
 
                   <button
-                    onClick={() => handleNavClick('checklist')}
-                    className={`w-full px-3.5 py-3 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
-                      activeTab === 'checklist'
-                        ? 'bg-blue-600 text-white font-black'
-                        : 'bg-slate-800/50 text-slate-300 hover:bg-slate-800'
-                    }`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onOpenSavedModal();
+                    }}
+                    className="w-full px-3.5 py-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-xl text-xs font-bold text-left text-slate-300 flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
-                      <CheckSquare className="w-4 h-4 text-emerald-400" />
-                      <span>Plano de Preparação</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-500" />
-                  </button>
-
-                  <button
-                    onClick={() => handleNavClick('evolution')}
-                    className={`w-full px-3.5 py-3 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
-                      activeTab === 'evolution'
-                        ? 'bg-blue-600 text-white font-black'
-                        : 'bg-slate-800/50 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <TrendingUp className="w-4 h-4 text-emerald-400" />
-                      <span>Evolução do Score</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-500" />
-                  </button>
-
-                  <button
-                    onClick={() => handleNavClick('report')}
-                    className={`w-full px-3.5 py-3 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
-                      activeTab === 'report'
-                        ? 'bg-blue-600 text-white font-black'
-                        : 'bg-slate-800/50 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Sparkles className="w-4 h-4 text-amber-300" />
-                      <span>Relatório Executivo IA</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-500" />
-                  </button>
-
-                  <button
-                    onClick={() => handleNavClick('chat')}
-                    className={`w-full px-3.5 py-3 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer ${
-                      activeTab === 'chat'
-                        ? 'bg-blue-600 text-white font-black'
-                        : 'bg-slate-800/50 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <HelpCircle className="w-4 h-4 text-indigo-300" />
-                      <span>Consultor Tributário IA</span>
+                      <FolderOpen className="w-4 h-4 text-blue-400" />
+                      <span>Diagnósticos Salvos</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-500" />
                   </button>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* SaaS Portals & Tools */}
-            <div className="pt-4 space-y-2">
-              <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block px-1">
-                Ferramentas SaaS & Recursos
-              </span>
-
-              <div className="space-y-1">
-                <button
-                  onClick={() => handleNavClick('subscription')}
-                  className="w-full px-3.5 py-3 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 text-amber-300 hover:bg-amber-500/20 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <CreditCard className="w-4 h-4 text-amber-400" />
-                    <span>Minha Assinatura & Planos</span>
-                  </div>
-                  <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full font-black">
-                    {activeUser?.plan || 'FREE'}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onOpenReportCenterModal();
-                  }}
-                  className="w-full px-3.5 py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl text-xs font-bold text-left text-slate-300 flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <FileText className="w-4 h-4 text-blue-400" />
-                    <span>Central de Relatórios PDF</span>
-                  </div>
+            {/* Group 4: CONTADOR */}
+            <div className="pt-3 space-y-2">
+              <button
+                onClick={() => toggleGroup('contador')}
+                className="w-full flex items-center justify-between text-[11px] font-black uppercase text-slate-400 tracking-wider px-1 py-1 cursor-pointer"
+              >
+                <span>CONTADOR</span>
+                {openGroups.contador ? (
+                  <ChevronDown className="w-4 h-4 text-emerald-400" />
+                ) : (
                   <ChevronRight className="w-4 h-4 text-slate-500" />
-                </button>
+                )}
+              </button>
 
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onOpenPortfolioModal();
-                  }}
-                  className="w-full px-3.5 py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl text-xs font-bold text-left text-slate-300 flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Users className="w-4 h-4 text-emerald-400" />
-                    <span>Carteira do Contador</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-slate-500" />
-                </button>
-
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onOpenSavedModal();
-                  }}
-                  className="w-full px-3.5 py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl text-xs font-bold text-left text-slate-300 flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <FolderOpen className="w-4 h-4 text-blue-400" />
-                    <span>Diagnósticos Salvos</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-slate-500" />
-                </button>
-
-                {isUserAdmin && (
+              {openGroups.contador && (
+                <div className="space-y-1.5 pl-1">
                   <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
-                      onOpenAdminModal();
+                      onOpenPortfolioModal();
                     }}
-                    className="w-full px-3.5 py-3 bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-purple-500/20 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
+                    className="w-full px-3.5 py-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-xl text-xs font-bold text-left text-slate-300 flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
-                      <Database className="w-4 h-4 text-purple-400" />
-                      <span>Painel Administrativo SaaS</span>
+                      <Users className="w-4 h-4 text-emerald-400" />
+                      <span>Carteira de Clientes</span>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-purple-400" />
+                    <ChevronRight className="w-4 h-4 text-slate-500" />
                   </button>
+                </div>
+              )}
+            </div>
+
+            {/* Group 5: ADMIN */}
+            {isUserAdmin && (
+              <div className="pt-3 space-y-2">
+                <button
+                  onClick={() => toggleGroup('admin')}
+                  className="w-full flex items-center justify-between text-[11px] font-black uppercase text-slate-400 tracking-wider px-1 py-1 cursor-pointer"
+                >
+                  <span>ADMIN</span>
+                  {openGroups.admin ? (
+                    <ChevronDown className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-slate-500" />
+                  )}
+                </button>
+
+                {openGroups.admin && (
+                  <div className="space-y-1.5 pl-1">
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        onOpenAdminModal();
+                      }}
+                      className="w-full px-3.5 py-2.5 bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-purple-500/20 rounded-xl text-xs font-bold text-left flex items-center justify-between transition-colors min-h-[44px] cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Database className="w-4 h-4 text-purple-400" />
+                        <span>Painel Administrativo</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-purple-400" />
+                    </button>
+                  </div>
                 )}
               </div>
-            </div>
+            )}
 
             {/* Bottom New Diagnosis CTA Button in Mobile Menu */}
             <div className="pt-4 pb-2">

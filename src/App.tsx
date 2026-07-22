@@ -21,6 +21,7 @@ import { ClientPortfolioModal } from './components/ClientPortfolioModal';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { ProfileSettingsModal } from './components/ProfileSettingsModal';
 import { OnboardingModal } from './components/OnboardingModal';
+import { LegalModal } from './components/LegalModal';
 import { PreparationChecklist } from './components/PreparationChecklist';
 import { SubscriptionView } from './components/SubscriptionView';
 import { AuthProvider, useAuth } from './modules/users';
@@ -115,6 +116,18 @@ function AppContent() {
   const [isPortfolioOpen, setIsPortfolioOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isProfileSettingsOpen, setIsProfileSettingsOpen] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [legalModalTab, setLegalModalTab] = useState<'privacy' | 'terms'>('privacy');
+
+  const openPrivacyModal = () => {
+    setLegalModalTab('privacy');
+    setIsLegalModalOpen(true);
+  };
+
+  const openTermsModal = () => {
+    setLegalModalTab('terms');
+    setIsLegalModalOpen(true);
+  };
 
   // Trigger Onboarding on first authenticated login if onboarding is not done
   useEffect(() => {
@@ -471,66 +484,125 @@ function AppContent() {
         onClose={() => setIsAdminOpen(false)}
       />
 
-      {/* Footer com Links SEO de navegação */}
-      <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 py-10 px-4 text-xs mt-16 print:hidden">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
-              <span className="font-bold text-slate-200">Split Ready AI</span>
-              <span>— Plataforma SaaS de Diagnóstico Financeiro & Split Payment</span>
+      <LegalModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        initialTab={legalModalTab}
+      />
+
+      {/* Footer Público do Split Ready AI */}
+      <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 py-12 px-4 sm:px-6 lg:px-8 text-xs mt-16 print:hidden">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Top Row: Brand Header */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 border-b border-slate-800 pb-8 text-center sm:text-left">
+            <div className="space-y-2 max-w-2xl w-full sm:w-auto">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
+                <span className="font-extrabold text-base text-white tracking-tight">Split Ready AI</span>
+                <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                  SaaS & Diagnóstico
+                </span>
+              </div>
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                Plataforma de Diagnóstico Financeiro & Impacto do Split Payment na Reforma Tributária.
+              </p>
             </div>
-            <p className="text-slate-500">
-              Baseado nas diretrizes da Emenda Constitucional 132/2023 (Reforma Tributária IBS + CBS).
+            <p className="text-slate-400 text-xs max-w-md leading-normal bg-slate-800/60 border border-slate-800 p-3.5 rounded-2xl w-full sm:w-auto text-left">
+              Baseado nas diretrizes da Emenda Constitucional nº 132/2023 (Reforma Tributária IBS + CBS).
             </p>
           </div>
 
-          <div className="pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-400">
-            <div className="flex flex-wrap items-center gap-4">
-              <button
-                onClick={navigateToHome}
-                className="hover:text-emerald-400 transition-colors cursor-pointer"
-              >
-                Início
-              </button>
-              <button
-                onClick={navigateToContents}
-                className="hover:text-cyan-400 transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <BookOpen className="w-3 h-3 text-cyan-400" />
-                Central de Conteúdos
-              </button>
-              <button
-                onClick={() => {
-                  navigateToHome();
-                  setTimeout(() => {
-                    document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                }}
-                className="hover:text-blue-400 transition-colors cursor-pointer"
-              >
-                Perguntas Frequentes (FAQ)
-              </button>
-              <a
-                href="/sitemap.xml"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-amber-400 transition-colors"
-              >
-                Sitemap.xml
-              </a>
-              <a
-                href="/robots.txt"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-slate-300 transition-colors"
-              >
-                Robots.txt
-              </a>
+          {/* Middle Row: Balanced Responsive Navigation & Institutional Columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 py-2">
+            {/* Column 1: Navegação Pública */}
+            <div className="space-y-3">
+              <h3 className="text-white text-xs font-black uppercase tracking-wider text-slate-200">
+                Navegação
+              </h3>
+              <ul className="space-y-2.5 text-xs">
+                <li>
+                  <button
+                    onClick={navigateToHome}
+                    className="text-slate-300 hover:text-emerald-400 transition-colors cursor-pointer inline-flex items-center gap-2 py-1"
+                  >
+                    Início
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={navigateToContents}
+                    className="text-slate-300 hover:text-cyan-400 transition-colors cursor-pointer inline-flex items-center gap-2 py-1"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
+                    Central de Conteúdos
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => {
+                      navigateToHome();
+                      setTimeout(() => {
+                        document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                    className="text-slate-300 hover:text-blue-400 transition-colors cursor-pointer inline-flex items-center gap-2 py-1"
+                  >
+                    Perguntas Frequentes (FAQ)
+                  </button>
+                </li>
+              </ul>
             </div>
 
-            <p className="text-slate-500">
-              © {new Date().getFullYear()} Split Ready AI — Todos os direitos reservados.
+            {/* Column 2: Links Institucionais */}
+            <div className="space-y-3">
+              <h3 className="text-white text-xs font-black uppercase tracking-wider text-slate-200">
+                Institucional
+              </h3>
+              <ul className="space-y-2.5 text-xs">
+                <li>
+                  <button
+                    onClick={openPrivacyModal}
+                    className="text-slate-300 hover:text-emerald-400 transition-colors cursor-pointer inline-flex items-center gap-2 py-1"
+                  >
+                    Política de Privacidade
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={openTermsModal}
+                    className="text-slate-300 hover:text-cyan-400 transition-colors cursor-pointer inline-flex items-center gap-2 py-1"
+                  >
+                    Termos de Uso
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Diagnóstico Expresso CTA */}
+            <div className="space-y-3 sm:col-span-2 md:col-span-1">
+              <h3 className="text-white text-xs font-black uppercase tracking-wider text-slate-200">
+                Diagnóstico Preventivo
+              </h3>
+              <p className="text-slate-400 text-xs leading-relaxed">
+                Simule o impacto da retenção na fonte no capital de giro do seu negócio de forma gratuita.
+              </p>
+              <button
+                onClick={() => setIsExpressOpen(true)}
+                className="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl transition-all cursor-pointer text-xs shadow-lg shadow-emerald-900/20 inline-flex items-center justify-center gap-2"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Diagnóstico Expresso
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom Row: Copyright */}
+          <div className="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
+            <p className="text-slate-400 text-center sm:text-left">
+              © {new Date().getFullYear()} Split Ready AI — Desenvolvido por NT Aplicações. Todos os direitos reservados.
+            </p>
+            <p className="text-slate-400 text-center sm:text-right">
+              Privacidade & Transparência Fiscal
             </p>
           </div>
         </div>

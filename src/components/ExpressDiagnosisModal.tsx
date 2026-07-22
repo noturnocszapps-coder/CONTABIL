@@ -3,6 +3,7 @@ import { X, Sparkles, ArrowRight, ShieldAlert, Award, RefreshCw, CheckCircle2, U
 import { FinancialInputs, CompanyInfo } from '../types';
 import { calculateSplitMetrics, formatCurrency } from '../lib/calculations';
 import { LeadService } from '../services/lead.service';
+import { AnalyticsService } from '../services/analytics.service';
 
 interface ExpressDiagnosisModalProps {
   isOpen: boolean;
@@ -53,11 +54,14 @@ export const ExpressDiagnosisModal: React.FC<ExpressDiagnosisModalProps> = ({
       empresa: leadEmpresa || 'Empresa Simulação',
       email: leadEmail,
       telefone: leadWhatsapp,
-      origem: 'Diagnóstico Express',
+      origem: 'express_diagnosis',
       diagnostico_score: metrics.splitReadyScore,
+      status: 'new' as const,
     };
 
     await LeadService.saveLead(leadData);
+    AnalyticsService.track('lead_created', { email: leadEmail, source: 'express_diagnosis', score: metrics.splitReadyScore });
+    AnalyticsService.track('diagnosis_completed', { email: leadEmail, score: metrics.splitReadyScore });
 
     const company: CompanyInfo = {
       nomeEmpresa: leadEmpresa || 'Minha Empresa (Diagnóstico Express)',
@@ -382,12 +386,12 @@ export const ExpressDiagnosisModal: React.FC<ExpressDiagnosisModalProps> = ({
 
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
-              <span className="flex items-center gap-1">
-                <Lock className="w-3 h-3 text-slate-400" />
-                Seus dados estão protegidos sob a LGPD.
+            <div className="flex items-center justify-between text-[11px] text-slate-500 px-1 gap-2">
+              <span className="flex items-center gap-1 leading-tight">
+                <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                Ao continuar, você concorda com o uso dos dados informados para gerar seu diagnóstico, salvar seu histórico e permitir contato relacionado à plataforma.
               </span>
-              <span>100% Gratuito</span>
+              <span className="shrink-0 font-bold text-slate-700">100% Gratuito</span>
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">

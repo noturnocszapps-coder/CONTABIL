@@ -125,7 +125,7 @@ export const Impact2027View: React.FC<Impact2027ViewProps> = ({
               </h3>
             </div>
             <span className="px-2.5 py-1 bg-blue-500/20 text-blue-300 text-xs font-bold rounded-lg border border-blue-400/30">
-              Retenção na Fonte (28%)
+              Retenção na Fonte (Ref. 28%)
             </span>
           </div>
 
