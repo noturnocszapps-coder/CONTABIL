@@ -33,7 +33,7 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({
       await updateProfile({
         name,
         companyName,
-        role,
+        role: user.role === 'ADMIN' ? 'ADMIN' : role,
       });
       setSuccessMsg('Perfil atualizado com sucesso!');
       setTimeout(() => setSuccessMsg(''), 3000);
@@ -123,33 +123,49 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({
 
             <div>
               <label className="font-bold text-slate-700 block mb-1">Perfil de Acesso:</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setRole('EMPRESA')}
-                  className={`p-2.5 rounded-xl border font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
-                    role === 'EMPRESA'
-                      ? 'bg-blue-50 border-blue-600 text-blue-900 shadow-xs'
-                      : 'bg-slate-50 border-slate-200 text-slate-600'
-                  }`}
-                >
-                  <Building2 className="w-4 h-4" />
-                  <span>EMPRESA</span>
-                </button>
+              {user.role === 'ADMIN' ? (
+                <div className="p-3 bg-purple-50 border border-purple-200 rounded-2xl flex items-start gap-3">
+                  <div className="p-2 bg-purple-600 text-white rounded-xl shrink-0 mt-0.5">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="font-black text-sm text-purple-900 block">
+                      🛡 Administrador do Sistema
+                    </span>
+                    <p className="text-xs text-purple-700 font-medium mt-0.5">
+                      Acesso administrativo completo da plataforma.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setRole('EMPRESA')}
+                    className={`p-2.5 rounded-xl border font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                      role === 'EMPRESA'
+                        ? 'bg-blue-50 border-blue-600 text-blue-900 shadow-xs'
+                        : 'bg-slate-50 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <Building2 className="w-4 h-4" />
+                    <span>EMPRESA</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setRole('CONTADOR')}
-                  className={`p-2.5 rounded-xl border font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
-                    role === 'CONTADOR'
-                      ? 'bg-emerald-50 border-emerald-600 text-emerald-900 shadow-xs'
-                      : 'bg-slate-50 border-slate-200 text-slate-600'
-                  }`}
-                >
-                  <Calculator className="w-4 h-4" />
-                  <span>CONTADOR</span>
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => setRole('CONTADOR')}
+                    className={`p-2.5 rounded-xl border font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                      role === 'CONTADOR'
+                        ? 'bg-emerald-50 border-emerald-600 text-emerald-900 shadow-xs'
+                        : 'bg-slate-50 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <Calculator className="w-4 h-4" />
+                    <span>CONTADOR</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Plan Card info */}
@@ -159,21 +175,28 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({
                   Plano Atual
                 </span>
                 <strong className="text-sm font-black text-slate-900">
-                  Plano {user.plan || 'FREE'}
+                  Plano {user.plan || (user.role === 'ADMIN' ? 'PRO' : 'FREE')}
                 </strong>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenPricing();
-                }}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-blue-200" />
-                <span>Mudar Plano</span>
-              </button>
+              {user.role === 'ADMIN' ? (
+                <div className="px-3 py-1.5 bg-purple-100 border border-purple-200 text-purple-800 font-extrabold rounded-xl text-xs flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Acesso Ilimitado</span>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenPricing();
+                  }}
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-blue-200" />
+                  <span>Mudar Plano</span>
+                </button>
+              )}
             </div>
 
             <button

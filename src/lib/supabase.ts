@@ -185,7 +185,7 @@ declare
 begin
   v_caller_uid := auth.uid();
   v_normalized_email := lower(trim(coalesce(p_email, '')));
-  v_normalized_phone := regexp_replace(coalesce(p_telefone, ''), '\D', '', 'g');
+  v_normalized_phone := regexp_replace(coalesce(p_telefone, ''), '\\D', '', 'g');
 
   -- 1. SANITIZAÇÃO E VALIDAÇÃO RIGOROSA DE RELACIONAMENTOS
   if v_caller_uid is null then
@@ -228,7 +228,7 @@ begin
   if v_existing_lead.id is null and v_normalized_phone <> '' then
     select * into v_existing_lead
     from public.leads
-    where regexp_replace(telefone, '\D', '', 'g') = v_normalized_phone
+    where regexp_replace(telefone, '\\D', '', 'g') = v_normalized_phone
     limit 1;
   end if;
 
